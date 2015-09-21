@@ -230,7 +230,7 @@ public class BTNavigationDropdownMenu: UIView {
         
         // Init table view
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration)
-        
+        self.tableView.scrollEnabled = false
         self.tableView.selectRowAtIndexPathHandler = { (indexPath: Int) -> () in
             self.didSelectItemAtIndexHandler!(indexPath: indexPath)
             self.setMenuTitle("\(items[indexPath])")
@@ -238,7 +238,11 @@ public class BTNavigationDropdownMenu: UIView {
             self.isShown = false
             self.layoutSubviews()
         }
+        //add by qky for hiding menu
         
+        var tapGesture = UITapGestureRecognizer(target: self, action: Selector("tapTableView:"))
+        self.tableView.addGestureRecognizer(tapGesture)
+        //add end
         // Add background view & table view to container view
         self.menuWrapper.addSubview(self.backgroundView)
         self.menuWrapper.addSubview(self.tableView)
@@ -254,7 +258,21 @@ public class BTNavigationDropdownMenu: UIView {
         // By default, hide menu view
         self.menuWrapper.hidden = true
     }
-    
+    func tapTableView(sender: UITapGestureRecognizer) {
+        println("tapTableView")
+        var location = sender.locationInView(self.tableView)
+        var path = self.tableView.indexPathForRowAtPoint(location)
+        if let indexPath = path {
+            println("tapRows")
+            self.tableView.tableView(self.tableView, didSelectRowAtIndexPath: indexPath)
+        }else {
+            println("tapBackground")
+            self.hideMenu()
+            self.isShown = false
+            self.layoutSubviews()
+        }
+        
+    }
     public override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
         if keyPath == "frame" {
             // Set up DropdownMenu
@@ -314,8 +332,12 @@ public class BTNavigationDropdownMenu: UIView {
             }, completion: nil
         )
     }
-    
-    public func hideMenu() {
+    public func hideMenuFromOutside() {
+        self.hideMenu()
+        self.isShown = false
+        self.layoutSubviews()
+    }
+    func hideMenu() {
         // Rotate arrow
         self.rotateArrow()
         
