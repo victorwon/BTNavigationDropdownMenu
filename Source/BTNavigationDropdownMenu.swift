@@ -315,7 +315,7 @@ public class BTNavigationDropdownMenu: UIView {
         )
     }
     
-    func hideMenu() {
+    public func hideMenu() {
         // Rotate arrow
         self.rotateArrow()
         
