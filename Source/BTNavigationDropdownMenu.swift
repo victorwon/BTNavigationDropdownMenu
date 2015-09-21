@@ -417,7 +417,7 @@ class BTConfiguration {
         self.cellBackgroundColor = UIColor.whiteColor()
         self.cellSeparatorColor = UIColor.darkGrayColor()
         self.cellTextLabelColor = UIColor.darkGrayColor()
-        self.cellTextLabelFont = UIFont(name: "HelveticaNeue-Bold", size: 17)
+        self.cellTextLabelFont = UIFont(name: "HelveticaNeue", size: 18)
         self.cellSelectionColor = UIColor.lightGrayColor()
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
         self.animationDuration = 0.5
@@ -512,10 +512,10 @@ class BTTableViewCell: UITableViewCell {
         cellContentFrame = CGRectMake(0, 0, (UIApplication.sharedApplication().keyWindow?.frame.width)!, self.configuration.cellHeight)
         self.contentView.backgroundColor = self.configuration.cellBackgroundColor
         self.selectionStyle = UITableViewCellSelectionStyle.None
-        self.textLabel!.textAlignment = NSTextAlignment.Left
+        self.textLabel!.textAlignment = NSTextAlignment.Center
         self.textLabel!.textColor = self.configuration.cellTextLabelColor
         self.textLabel!.font = self.configuration.cellTextLabelFont
-        self.textLabel!.frame = CGRectMake(20, 0, cellContentFrame.width, cellContentFrame.height)
+        self.textLabel!.frame = CGRectMake(0, 0, cellContentFrame.width, cellContentFrame.height)
         
         
         // Checkmark icon
