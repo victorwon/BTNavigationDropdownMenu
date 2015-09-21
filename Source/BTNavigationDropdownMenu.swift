@@ -239,10 +239,10 @@ public class BTNavigationDropdownMenu: UIView {
             self.layoutSubviews()
         }
         //add by qky for hiding menu
-        
         var tapGesture = UITapGestureRecognizer(target: self, action: Selector("tapTableView:"))
         self.tableView.addGestureRecognizer(tapGesture)
         //add end
+        
         // Add background view & table view to container view
         self.menuWrapper.addSubview(self.backgroundView)
         self.menuWrapper.addSubview(self.tableView)
@@ -259,14 +259,11 @@ public class BTNavigationDropdownMenu: UIView {
         self.menuWrapper.hidden = true
     }
     func tapTableView(sender: UITapGestureRecognizer) {
-        println("tapTableView")
         var location = sender.locationInView(self.tableView)
         var path = self.tableView.indexPathForRowAtPoint(location)
         if let indexPath = path {
-            println("tapRows")
             self.tableView.tableView(self.tableView, didSelectRowAtIndexPath: indexPath)
         }else {
-            println("tapBackground")
             self.hideMenu()
             self.isShown = false
             self.layoutSubviews()
