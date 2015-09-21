@@ -411,8 +411,8 @@ class BTConfiguration {
         let bundle = NSBundle(forClass: BTConfiguration.self)
         let url = bundle.URLForResource("BTNavigationDropdownMenu", withExtension: "bundle")
         let imageBundle = NSBundle(URL: url!)
-        let checkMarkImagePath = imageBundle?.pathForResource("checkmark_icon", ofType: "png")
-        let arrowImagePath = imageBundle?.pathForResource("arrow_down_icon", ofType: "png")
+        let checkMarkImagePath = imageBundle?.pathForResource("icon_city_selected", ofType: "png")
+        let arrowImagePath = imageBundle?.pathForResource("icon_city_more", ofType: "png")
 
         // Default values
         self.menuTitleColor = UIColor.darkGrayColor()
