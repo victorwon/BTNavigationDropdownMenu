@@ -332,7 +332,7 @@ public class BTNavigationDropdownMenu: UIView {
     public func hideMenuFromOutside() {
         self.hideMenu()
         self.isShown = false
-        self.layoutSubviews()
+        self.navigationController = nil
     }
     func hideMenu() {
         // Rotate arrow
