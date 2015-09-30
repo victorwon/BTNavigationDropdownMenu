@@ -162,7 +162,7 @@ public class BTNavigationDropdownMenu: UIView {
     
     public var didSelectItemAtIndexHandler: ((indexPath: Int) -> ())?
     
-    private var navigationController: UINavigationController?
+    private weak var navigationController: UINavigationController?
     private var configuration = BTConfiguration()
     private var topSeparator: UIView!
     private var menuButton: UIButton!
@@ -174,14 +174,14 @@ public class BTNavigationDropdownMenu: UIView {
     private var isShown: Bool!
     private var menuWrapper: UIView!
     
-    required public init?(coder aDecoder: NSCoder) {
+    required public init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public init(title: String, items: [AnyObject]) {
+    public init(title: String, items: [AnyObject], vc: UIViewController) {
         
-        // Navigation controller
-        self.navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController?.topMostViewController?.navigationController
+        //self.navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController?.topMostViewController?.navigationController
+        self.navigationController = vc.navigationController
         
         // Get titleSize
         let titleSize = (title as NSString).sizeWithAttributes([NSFontAttributeName:self.configuration.cellTextLabelFont])
@@ -220,16 +220,16 @@ public class BTNavigationDropdownMenu: UIView {
         // Set up DropdownMenu
         self.menuWrapper = UIView(frame: CGRectMake(menuWrapperBounds.origin.x, 0, menuWrapperBounds.width, menuWrapperBounds.height))
         self.menuWrapper.clipsToBounds = true
-        self.menuWrapper.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
+        self.menuWrapper.autoresizingMask = UIViewAutoresizing.FlexibleWidth.rawValue | UIViewAutoresizing.FlexibleHeight.rawValue
         
         // Init background view (under table view)
         self.backgroundView = UIView(frame: menuWrapperBounds)
         self.backgroundView.backgroundColor = self.configuration.maskBackgroundColor
-        self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
+        self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
         
         // Init table view
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration)
-        
+        self.tableView.scrollEnabled = false
         self.tableView.selectRowAtIndexPathHandler = { (indexPath: Int) -> () in
             self.didSelectItemAtIndexHandler!(indexPath: indexPath)
             self.setMenuTitle("\(items[indexPath])")
@@ -237,6 +237,10 @@ public class BTNavigationDropdownMenu: UIView {
             self.isShown = false
             self.layoutSubviews()
         }
+        //add by qky for hiding menu
+        var tapGesture = UITapGestureRecognizer(target: self, action: Selector("tapTableView:"))
+        self.tableView.addGestureRecognizer(tapGesture)
+        //add end
         
         // Add background view & table view to container view
         self.menuWrapper.addSubview(self.backgroundView)
@@ -253,8 +257,19 @@ public class BTNavigationDropdownMenu: UIView {
         // By default, hide menu view
         self.menuWrapper.hidden = true
     }
-    
-    public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    func tapTableView(sender: UITapGestureRecognizer) {
+        var location = sender.locationInView(self.tableView)
+        var path = self.tableView.indexPathForRowAtPoint(location)
+        if let indexPath = path {
+            self.tableView.tableView(self.tableView, didSelectRowAtIndexPath: indexPath)
+        }else {
+            self.hideMenu()
+            self.isShown = false
+            self.layoutSubviews()
+        }
+        
+    }
+    public override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
         if keyPath == "frame" {
             // Set up DropdownMenu
             self.menuWrapper.frame.origin.y = self.navigationController!.navigationBar.frame.maxY
@@ -306,14 +321,19 @@ public class BTNavigationDropdownMenu: UIView {
             delay: 0,
             usingSpringWithDamping: 0.7,
             initialSpringVelocity: 0.5,
-            options: [],
+            options: nil,
             animations: {
                 self.tableView.frame.origin.y = CGFloat(-300)
                 self.backgroundView.alpha = self.configuration.maskBackgroundOpacity
             }, completion: nil
         )
     }
-    
+    public func hideMenuFromOutside() {
+        self.hideMenu()
+        self.isShown = false
+//        self.navigationController?.view.removeObserver(self, forKeyPath: "frame", context: nil)
+//        self.navigationController = nil
+    }
     func hideMenu() {
         // Rotate arrow
         self.rotateArrow()
@@ -326,7 +346,7 @@ public class BTNavigationDropdownMenu: UIView {
             delay: 0,
             usingSpringWithDamping: 0.7,
             initialSpringVelocity: 0.5,
-            options: [],
+            options: nil,
             animations: {
                 self.tableView.frame.origin.y = CGFloat(-200)
             }, completion: nil
@@ -388,8 +408,8 @@ class BTConfiguration {
         let bundle = NSBundle(forClass: BTConfiguration.self)
         let url = bundle.URLForResource("BTNavigationDropdownMenu", withExtension: "bundle")
         let imageBundle = NSBundle(URL: url!)
-        let checkMarkImagePath = imageBundle?.pathForResource("checkmark_icon", ofType: "png")
-        let arrowImagePath = imageBundle?.pathForResource("arrow_down_icon", ofType: "png")
+        let checkMarkImagePath = imageBundle?.pathForResource("icon_city_selected", ofType: "png")
+        let arrowImagePath = imageBundle?.pathForResource("icon_city_more", ofType: "png")
 
         // Default values
         self.menuTitleColor = UIColor.darkGrayColor()
@@ -397,7 +417,7 @@ class BTConfiguration {
         self.cellBackgroundColor = UIColor.whiteColor()
         self.cellSeparatorColor = UIColor.darkGrayColor()
         self.cellTextLabelColor = UIColor.darkGrayColor()
-        self.cellTextLabelFont = UIFont(name: "HelveticaNeue-Bold", size: 17)
+        self.cellTextLabelFont = UIFont(name: "HelveticaNeue", size: 18)
         self.cellSelectionColor = UIColor.lightGrayColor()
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
         self.animationDuration = 0.5
@@ -419,7 +439,7 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
     private var items: [AnyObject]!
     private var selectedIndexPath: Int!
     
-    required init?(coder aDecoder: NSCoder) {
+    required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -492,10 +512,10 @@ class BTTableViewCell: UITableViewCell {
         cellContentFrame = CGRectMake(0, 0, (UIApplication.sharedApplication().keyWindow?.frame.width)!, self.configuration.cellHeight)
         self.contentView.backgroundColor = self.configuration.cellBackgroundColor
         self.selectionStyle = UITableViewCellSelectionStyle.None
-        self.textLabel!.textAlignment = NSTextAlignment.Left
+        self.textLabel!.textAlignment = NSTextAlignment.Center
         self.textLabel!.textColor = self.configuration.cellTextLabelColor
         self.textLabel!.font = self.configuration.cellTextLabelFont
-        self.textLabel!.frame = CGRectMake(20, 0, cellContentFrame.width, cellContentFrame.height)
+        self.textLabel!.frame = CGRectMake(0, 0, cellContentFrame.width, cellContentFrame.height)
         
         
         // Checkmark icon
@@ -513,7 +533,7 @@ class BTTableViewCell: UITableViewCell {
         self.contentView.addSubview(separator)
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -533,7 +553,7 @@ class BTTableCellContentView: UIView {
         self.initialize()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         self.initialize()

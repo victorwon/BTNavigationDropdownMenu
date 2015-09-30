@@ -16,7 +16,7 @@ it, simply add the following line to your Podfile:
 
 ```ruby
 use_frameworks!
-pod 'BTNavigationDropdownMenu'
+pod 'BTNavigationDropdownMenu', :git => 'https://github.com/PhamBaTho/BTNavigationDropdownMenu.git', :branch => 'swift-1.2'
 ```
 Go ahead and **import** BTNavigationDropdownMenu into your own Swift files 
 ```swift
