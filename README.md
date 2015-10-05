@@ -11,7 +11,6 @@ The elegant dropdown menu, written in **Swift**, appears underneath navigation b
 ![alt tag](https://github.com/PhamBaTho/BTNavigationDropdownMenu/blob/master/Assets/Demo.gif)
 
 ## Installation:
-
 **BTNavigationDropdownMenu** is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
@@ -23,6 +22,7 @@ Go ahead and **import** BTNavigationDropdownMenu into your own Swift files
 ```swift
 import BTNavigationDropdownMenu
 ```
+Note: This library mainly supports for **Xcode 7, Swift 2.0** and embedded frameworks. For older versions of XCode, use branch [swift-1.2](https://github.com/PhamBaTho/BTNavigationDropdownMenu/tree/swift-1.2)
 
 ## Usage:
 ### Instantiating
@@ -77,7 +77,7 @@ Once you have assigned the items and frame for dropdown menu, you can custom the
 
 ## Requirement
 - iOS 8.0+ (Cocoapods with Swift support will only work on iOS 8.0+. Alternatively, you will have to import library manually to your project)
-- Xcode 6.1
+- Xcode 7.0, Swift 2.0
 
 ## Changelog
 **0.1.7 (04-09-2015)**

@@ -180,7 +180,6 @@ public class BTNavigationDropdownMenu: UIView {
     
     public init(title: String, items: [AnyObject], vc: UIViewController) {
         
-        // Navigation controller
         //self.navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController?.topMostViewController?.navigationController
         self.navigationController = vc.navigationController
         
@@ -221,13 +220,12 @@ public class BTNavigationDropdownMenu: UIView {
         // Set up DropdownMenu
         self.menuWrapper = UIView(frame: CGRectMake(menuWrapperBounds.origin.x, 0, menuWrapperBounds.width, menuWrapperBounds.height))
         self.menuWrapper.clipsToBounds = true
-        self.menuWrapper.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
+        self.menuWrapper.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
         
         // Init background view (under table view)
         self.backgroundView = UIView(frame: menuWrapperBounds)
         self.backgroundView.backgroundColor = self.configuration.maskBackgroundColor
-        self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
-        
+        self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
         // Init table view
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration)
         self.tableView.scrollEnabled = false
@@ -270,14 +268,13 @@ public class BTNavigationDropdownMenu: UIView {
         }
         
     }
-    public override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+    public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if keyPath == "frame" {
             // Set up DropdownMenu
             self.menuWrapper.frame.origin.y = self.navigationController!.navigationBar.frame.maxY
             self.tableView.reloadData()
         }
     }
-    
     override public func layoutSubviews() {
         self.menuTitle.sizeToFit()
         self.menuTitle.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2)
@@ -322,7 +319,7 @@ public class BTNavigationDropdownMenu: UIView {
             delay: 0,
             usingSpringWithDamping: 0.7,
             initialSpringVelocity: 0.5,
-            options: nil,
+            options: [],
             animations: {
                 self.tableView.frame.origin.y = CGFloat(-300)
                 self.backgroundView.alpha = self.configuration.maskBackgroundOpacity
@@ -347,7 +344,7 @@ public class BTNavigationDropdownMenu: UIView {
             delay: 0,
             usingSpringWithDamping: 0.7,
             initialSpringVelocity: 0.5,
-            options: nil,
+            options: [],
             animations: {
                 self.tableView.frame.origin.y = CGFloat(-200)
             }, completion: nil
@@ -554,7 +551,7 @@ class BTTableCellContentView: UIView {
         self.initialize()
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         self.initialize()
