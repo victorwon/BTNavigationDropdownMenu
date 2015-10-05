@@ -27,7 +27,7 @@ class ViewController: UIViewController {
         menuView.cellSelectionColor = UIColor(red: 0.0/255.0, green:160.0/255.0, blue:195.0/255.0, alpha: 1.0)
         menuView.cellTextLabelColor = UIColor.whiteColor()
         menuView.cellTextLabelFont = UIFont(name: "Avenir-Heavy", size: 17)
-        menuView.arrowPadding = 15
+        menuView.arrowPadding = 10
         menuView.animationDuration = 0.5
         menuView.maskBackgroundColor = UIColor.blackColor()
         menuView.maskBackgroundOpacity = 0.3

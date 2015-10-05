@@ -514,7 +514,7 @@ class BTTableViewCell: UITableViewCell {
         
         
         // Checkmark icon
-        self.checkmarkIcon = UIImageView(frame: CGRectMake(cellContentFrame.width - 50, (cellContentFrame.height - 30)/2, 30, 30))
+        self.checkmarkIcon = UIImageView(frame: CGRectMake(cellContentFrame.width - 50, (cellContentFrame.height - 20)/2, 20, 20))
         self.checkmarkIcon.hidden = true
         self.checkmarkIcon.image = self.configuration.checkMarkImage
         self.checkmarkIcon.contentMode = UIViewContentMode.ScaleAspectFill
