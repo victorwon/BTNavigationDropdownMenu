@@ -409,7 +409,7 @@ class BTConfiguration {
         let arrowImagePath = imageBundle?.pathForResource("icon_city_more", ofType: "png")
 
         // Default values
-        self.menuTitleColor = UIColor.darkGrayColor()
+        self.menuTitleColor = UIColor(red: 118, green: 123, blue: 138, alpha: 1.0)
         self.cellHeight = 50
         self.cellBackgroundColor = UIColor.whiteColor()
         self.cellSeparatorColor = UIColor.darkGrayColor()
