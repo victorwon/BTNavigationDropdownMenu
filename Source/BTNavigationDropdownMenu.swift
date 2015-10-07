@@ -257,8 +257,8 @@ public class BTNavigationDropdownMenu: UIView {
         self.menuWrapper.hidden = true
     }
     func tapTableView(sender: UITapGestureRecognizer) {
-        var location = sender.locationInView(self.tableView)
-        var path = self.tableView.indexPathForRowAtPoint(location)
+        let location = sender.locationInView(self.tableView)
+        let path = self.tableView.indexPathForRowAtPoint(location)
         if let indexPath = path {
             self.tableView.tableView(self.tableView, didSelectRowAtIndexPath: indexPath)
         }else {
@@ -283,7 +283,7 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     func setupDefaultConfiguration() {
-        self.menuTitleColor = UIColor(red: 118, green: 123, blue: 138, alpha: 1.0) // Setter
+        self.menuTitleColor = UIColor(red: 118/255.0, green: 128/255.0, blue: 138/255.0, alpha: 1.0)// Setter
         self.cellBackgroundColor = self.navigationController?.navigationBar.barTintColor
         self.cellSeparatorColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
         self.cellTextLabelColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
