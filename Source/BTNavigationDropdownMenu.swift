@@ -419,7 +419,7 @@ class BTConfiguration {
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
         self.animationDuration = 0.5
         self.arrowImage = UIImage(contentsOfFile: arrowImagePath!)
-        self.arrowPadding = 15
+        self.arrowPadding = 0
         self.maskBackgroundColor = UIColor.blackColor()
         self.maskBackgroundOpacity = 0.3
     }
