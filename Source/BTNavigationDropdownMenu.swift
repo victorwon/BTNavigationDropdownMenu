@@ -227,7 +227,14 @@ public class BTNavigationDropdownMenu: UIView {
         self.backgroundView.backgroundColor = self.configuration.maskBackgroundColor
         self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
         // Init table view
-        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration)
+        var indexPath = 0
+        for (idx, item) in (items as! [String]).enumerate() {
+            if item == title {
+                indexPath = idx
+                break
+            }
+        }
+        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration, selectedIndexPath: indexPath)
         self.tableView.scrollEnabled = false
         self.tableView.selectRowAtIndexPathHandler = { (indexPath: Int) -> () in
             self.didSelectItemAtIndexHandler!(indexPath: indexPath)
@@ -440,11 +447,11 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(frame: CGRect, items: [AnyObject], configuration: BTConfiguration) {
+    init(frame: CGRect, items: [AnyObject], configuration: BTConfiguration, selectedIndexPath indexPath: Int = 0) {
         super.init(frame: frame, style: UITableViewStyle.Plain)
         
         self.items = items
-        self.selectedIndexPath = 0
+        self.selectedIndexPath = indexPath
         self.configuration = configuration
         
         // Setup table view

@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         self.navigationController?.navigationBar.barTintColor = UIColor(red: 0.0/255.0, green:180/255.0, blue:220/255.0, alpha: 1.0)
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.redColor()]
         
-        let menuView = BTNavigationDropdownMenu(title: items.first!, items: items, vc: self)
+        let menuView = BTNavigationDropdownMenu(title: "Nearest", items: items, vc: self)
         menuView.menuTitleColor = UIColor.blackColor()
         menuView.cellHeight = 50
         //menuView.cellBackgroundColor = self.navigationController?.navigationBar.barTintColor
