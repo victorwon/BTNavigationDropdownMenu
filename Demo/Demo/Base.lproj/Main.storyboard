@@ -35,7 +35,13 @@
                             <constraint firstAttribute="centerX" secondItem="Jc6-f8-1fo" secondAttribute="centerX" id="gO1-IZ-wQ5"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="B2m-EM-oU4"/>
+                    <navigationItem key="navigationItem" id="B2m-EM-oU4">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="sPU-xC-m3e">
+                            <connections>
+                                <segue destination="FKE-lL-zuf" kind="show" id="8Ci-Ki-bU1"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="selectedCellLabel" destination="Jc6-f8-1fo" id="old-2u-sHY"/>
                     </connections>
@@ -43,6 +49,53 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1433" y="356"/>
+        </scene>
+        <!--Title-->
+        <scene sceneID="meV-ze-MAv">
+            <objects>
+                <viewController id="FKE-lL-zuf" customClass="SecondViewController" customModule="Demo" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="s5M-bY-4TY"/>
+                        <viewControllerLayoutGuide type="bottom" id="xDP-pA-Did"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="37o-hV-m5O">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Title" id="EM9-Vv-flt">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="VpF-VM-fZr">
+                            <connections>
+                                <segue destination="vta-TD-Abi" kind="show" id="a9q-u1-3pH"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SdL-dC-Qq3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2084" y="347"/>
+        </scene>
+        <!--Third View Controller-->
+        <scene sceneID="9iu-WK-FeY">
+            <objects>
+                <viewController id="vta-TD-Abi" customClass="ThirdViewController" customModule="Demo" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="YYW-zu-Nni"/>
+                        <viewControllerLayoutGuide type="bottom" id="zWG-mp-9oj"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Yxu-ZV-Har">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bPp-Vm-7Nb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2744" y="347"/>
         </scene>
         <!--Tab 1-->
         <scene sceneID="GTl-3t-6dt">
