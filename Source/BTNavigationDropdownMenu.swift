@@ -118,7 +118,7 @@ public class BTNavigationDropdownMenu: UIView {
             self.configuration.animationDuration = value
         }
     }
-
+    
     // The arrow next to navigation title
     public var arrowImage: UIImage! {
         get {
@@ -178,6 +178,13 @@ public class BTNavigationDropdownMenu: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    deinit {
+        NSLog("BTNavigationDropdownMenu deinit")
+        self.navigationController?.view.removeObserver(self, forKeyPath: "frame", context: nil)
+        
+    }
+    
     public init(title: String, items: [AnyObject], vc: UIViewController) {
         
         //self.navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController?.topMostViewController?.navigationController
@@ -198,7 +205,7 @@ public class BTNavigationDropdownMenu: UIView {
         
         // Init properties
         self.setupDefaultConfiguration()
-
+        
         // Init button as navigation title
         self.menuButton = UIButton(frame: frame)
         self.menuButton.addTarget(self, action: "menuButtonTapped:", forControlEvents: UIControlEvents.TouchUpInside)
@@ -236,12 +243,13 @@ public class BTNavigationDropdownMenu: UIView {
         }
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration, selectedIndexPath: indexPath)
         self.tableView.scrollEnabled = false
-        self.tableView.selectRowAtIndexPathHandler = { (indexPath: Int) -> () in
-            self.didSelectItemAtIndexHandler!(indexPath: indexPath)
-            self.setMenuTitle("\(items[indexPath])")
-            self.hideMenu()
-            self.isShown = false
-            self.layoutSubviews()
+        self.tableView.selectRowAtIndexPathHandler = { [weak self] (indexPath: Int) -> () in
+            
+            self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
+            self?.setMenuTitle("\(items[indexPath])")
+            self?.hideMenu()
+            self?.isShown = false
+            self?.layoutSubviews()
         }
         //add by qky for hiding menu
         var tapGesture = UITapGestureRecognizer(target: self, action: Selector("tapTableView:"))
@@ -363,8 +371,8 @@ public class BTNavigationDropdownMenu: UIView {
         UIView.animateWithDuration(self.configuration.animationDuration, delay: 0, options: UIViewAnimationOptions.TransitionNone, animations: {
             self.tableView.frame.origin.y = -CGFloat(self.items.count) * self.configuration.cellHeight - 300
             self.backgroundView.alpha = 0
-        }, completion: { _ in
-            self.menuWrapper.hidden = true
+            }, completion: { _ in
+                self.menuWrapper.hidden = true
         })
     }
     
@@ -373,7 +381,7 @@ public class BTNavigationDropdownMenu: UIView {
             if let selfie = self {
                 selfie.menuArrow.transform = CGAffineTransformRotate(selfie.menuArrow.transform, 180 * CGFloat(M_PI/180))
             }
-        })
+            })
     }
     
     func setMenuTitle(title: String) {
@@ -417,7 +425,7 @@ class BTConfiguration {
         let imageBundle = NSBundle(URL: url!)
         let checkMarkImagePath = imageBundle?.pathForResource("icon_city_selected", ofType: "png")
         let arrowImagePath = imageBundle?.pathForResource("icon_city_more", ofType: "png")
-
+        
         // Default values
         self.menuTitleColor = UIColor(red: 118, green: 123, blue: 138, alpha: 1.0)
         self.cellHeight = 50
@@ -586,9 +594,9 @@ class BTTableCellContentView: UIView {
 extension UIViewController {
     // Get ViewController in top present level
     var topPresentedViewController: UIViewController? {
-            var target: UIViewController? = self
-            while (target?.presentedViewController != nil) {
-                target = target?.presentedViewController
+        var target: UIViewController? = self
+        while (target?.presentedViewController != nil) {
+            target = target?.presentedViewController
         }
         return target
     }
