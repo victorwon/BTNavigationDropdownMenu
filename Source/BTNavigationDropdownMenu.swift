@@ -350,6 +350,16 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     func setMenuTitle(title: String) {
+        if title == self.menuTitle.text {
+            return
+        }
+        self.tableView.selectedIndexPath = -1 // in case nothing matches
+        for (index, item) in items.enumerate() {
+            if item as? String == title {
+                self.tableView.selectedIndexPath = index
+                break
+            }
+        }
         self.menuTitle.text = title
     }
     
@@ -427,7 +437,7 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         super.init(frame: frame, style: UITableViewStyle.Plain)
         
         self.items = items
-        self.selectedIndexPath = -1
+        self.selectedIndexPath = 0
         self.configuration = configuration
         
         // Setup table view
