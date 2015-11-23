@@ -230,7 +230,7 @@ public class BTNavigationDropdownMenu: UIView {
         // Init table view
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration)
         
-        self.tableView.selectRowAtIndexPathHandler = { (indexPath: Int) -> () in
+        self.tableView.selectRowAtIndexPathHandler = { [unowned self] (indexPath: Int) -> () in
             self.didSelectItemAtIndexHandler!(indexPath: indexPath)
             self.setMenuTitle("\(items[indexPath])")
             self.hideMenu()
@@ -414,10 +414,10 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
     // Public properties
     var configuration: BTConfiguration!
     var selectRowAtIndexPathHandler: ((indexPath: Int) -> ())?
-    var selectedIndexPath: Int!
     
     // Private properties
     private var items: [AnyObject]!
+    private var selectedIndexPath: Int!
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -427,7 +427,7 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         super.init(frame: frame, style: UITableViewStyle.Plain)
         
         self.items = items
-        self.selectedIndexPath = 0
+        self.selectedIndexPath = -1
         self.configuration = configuration
         
         // Setup table view
