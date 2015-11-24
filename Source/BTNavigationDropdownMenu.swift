@@ -252,6 +252,9 @@ public class BTNavigationDropdownMenu: UIView {
         
         // By default, hide menu view
         self.menuWrapper.hidden = true
+        
+        // set title & selected index
+        self.setMenuTitle(title)
     }
     
     public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
@@ -440,7 +443,7 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         super.init(frame: frame, style: UITableViewStyle.Plain)
         
         self.items = items
-        self.selectedIndexPath = 0
+        self.selectedIndexPath = -1
         self.configuration = configuration
         
         // Setup table view
