@@ -118,7 +118,7 @@ public class BTNavigationDropdownMenu: UIView {
             self.configuration.animationDuration = value
         }
     }
-
+    
     // The arrow next to navigation title
     public var arrowImage: UIImage! {
         get {
@@ -198,7 +198,7 @@ public class BTNavigationDropdownMenu: UIView {
         
         // Init properties
         self.setupDefaultConfiguration()
-
+        
         // Init button as navigation title
         self.menuButton = UIButton(frame: frame)
         self.menuButton.addTarget(self, action: "menuButtonTapped:", forControlEvents: UIControlEvents.TouchUpInside)
@@ -263,7 +263,8 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     override public func layoutSubviews() {
-        self.menuTitle.sizeToFit()
+        let margin = (self.configuration.arrowPadding+self.configuration.arrowImage.size.width)/2 + 70
+        self.menuTitle.frame = CGRect(x: margin, y: 0, width: self.superview!.frame.size.width-margin*2, height: self.frame.size.height)
         self.menuTitle.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2)
         self.menuArrow.sizeToFit()
         self.menuArrow.center = CGPointMake(CGRectGetMaxX(self.menuTitle.frame) + self.configuration.arrowPadding, self.frame.size.height/2)
@@ -336,8 +337,8 @@ public class BTNavigationDropdownMenu: UIView {
         UIView.animateWithDuration(self.configuration.animationDuration, delay: 0, options: UIViewAnimationOptions.TransitionNone, animations: {
             self.tableView.frame.origin.y = -CGFloat(self.items.count) * self.configuration.cellHeight - 300
             self.backgroundView.alpha = 0
-        }, completion: { _ in
-            self.menuWrapper.hidden = true
+            }, completion: { _ in
+                self.menuWrapper.hidden = true
         })
     }
     
@@ -346,10 +347,10 @@ public class BTNavigationDropdownMenu: UIView {
             if let selfie = self {
                 selfie.menuArrow.transform = CGAffineTransformRotate(selfie.menuArrow.transform, 180 * CGFloat(M_PI/180))
             }
-        })
+            })
     }
     
-    func setMenuTitle(title: String) {
+    public func setMenuTitle(title: String) {
         if title == self.menuTitle.text {
             return
         }
@@ -400,7 +401,7 @@ class BTConfiguration {
         let imageBundle = NSBundle(URL: url!)
         let checkMarkImagePath = imageBundle?.pathForResource("checkmark_icon", ofType: "png")
         let arrowImagePath = imageBundle?.pathForResource("arrow_down_icon", ofType: "png")
-
+        
         // Default values
         self.menuTitleColor = UIColor.darkGrayColor()
         self.cellHeight = 50
@@ -505,7 +506,7 @@ class BTTableViewCell: UITableViewCell {
         self.textLabel!.textAlignment = NSTextAlignment.Left
         self.textLabel!.textColor = self.configuration.cellTextLabelColor
         self.textLabel!.font = self.configuration.cellTextLabelFont
-        self.textLabel!.frame = CGRectMake(20, 0, cellContentFrame.width, cellContentFrame.height)
+        self.textLabel!.frame = CGRectMake(20, 0, cellContentFrame.width-80, cellContentFrame.height)
         
         
         // Checkmark icon
@@ -569,9 +570,9 @@ class BTTableCellContentView: UIView {
 extension UIViewController {
     // Get ViewController in top present level
     var topPresentedViewController: UIViewController? {
-            var target: UIViewController? = self
-            while (target?.presentedViewController != nil) {
-                target = target?.presentedViewController
+        var target: UIViewController? = self
+        while (target?.presentedViewController != nil) {
+            target = target?.presentedViewController
         }
         return target
     }
