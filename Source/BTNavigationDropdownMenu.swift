@@ -263,11 +263,13 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     override public func layoutSubviews() {
-        let margin = (self.configuration.arrowPadding+self.configuration.arrowImage.size.width)/2 + 70
-        self.menuTitle.frame = CGRect(x: margin, y: 0, width: self.superview!.frame.size.width-margin*2, height: self.frame.size.height)
-        self.menuTitle.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2)
+        if let sv = self.superview { // constrain to superview if exists
+            let margin = CGFloat(50.0) // leaving out space for 1 button on each side
+            self.menuTitle.frame = CGRect(x: margin, y: 0, width: sv.frame.size.width-margin*2, height: self.frame.size.height)
+        }
+        self.menuTitle.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2 - 2)
         self.menuArrow.sizeToFit()
-        self.menuArrow.center = CGPointMake(CGRectGetMaxX(self.menuTitle.frame) + self.configuration.arrowPadding, self.frame.size.height/2)
+        self.menuArrow.center = CGPointMake(self.menuTitle.center.x, self.menuTitle.center.y + 14)
     }
     
     func setupDefaultConfiguration() {
