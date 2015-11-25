@@ -15,12 +15,17 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        // set up the menu here instead of viewDidLoad(), otherwise the topLayoutGuide.length will be 0 and the menu's bottom (if longer than screen height) will be cut off
         let items = ["Most Popular", "Latest", "Trending", "Nearest", "Top Picks"]
         self.selectedCellLabel.text = items.first
         self.navigationController?.navigationBar.translucent = false
         self.navigationController?.navigationBar.barTintColor = UIColor(red: 0.0/255.0, green:180/255.0, blue:220/255.0, alpha: 1.0)
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
-        
+
         let menuView = BTNavigationDropdownMenu(title: items.first!, items: items)
         menuView.cellHeight = 50
         menuView.cellBackgroundColor = self.navigationController?.navigationBar.barTintColor
@@ -37,6 +42,7 @@ class ViewController: UIViewController {
         }
         
         self.navigationItem.titleView = menuView
+
     }
 }
 

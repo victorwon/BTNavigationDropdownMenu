@@ -229,7 +229,8 @@ public class BTNavigationDropdownMenu: UIView {
         self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
         
         // Init table view
-        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration)
+        let layoutOffset = (self.navigationController?.topViewController?.topLayoutGuide.length)! + (self.navigationController?.topViewController?.bottomLayoutGuide.length)!
+        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300 - layoutOffset), items: items, configuration: self.configuration)
         
         self.tableView.selectRowAtIndexPathHandler = {
             [weak self] (indexPath: Int) -> () in
