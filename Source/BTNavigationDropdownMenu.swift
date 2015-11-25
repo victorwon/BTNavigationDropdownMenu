@@ -178,16 +178,17 @@ public class BTNavigationDropdownMenu: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        self.navigationController?.view.removeObserver(self, forKeyPath: "frame")
+    }
+    
     public init(title: String, items: [AnyObject]) {
         
         // Navigation controller
         self.navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController?.topMostViewController?.navigationController
         
-        // Get titleSize
-        let titleSize = (title as NSString).sizeWithAttributes([NSFontAttributeName:self.configuration.cellTextLabelFont])
-        
         // Set frame
-        let frame = CGRectMake(0, 0, titleSize.width + (self.configuration.arrowPadding + self.configuration.arrowImage.size.width)*2, self.navigationController!.navigationBar.frame.height)
+        let frame = CGRectMake(0, 0, self.navigationController!.navigationBar.frame.width, self.navigationController!.navigationBar.frame.height)
         
         super.init(frame:frame)
         
@@ -230,12 +231,13 @@ public class BTNavigationDropdownMenu: UIView {
         // Init table view
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300), items: items, configuration: self.configuration)
         
-        self.tableView.selectRowAtIndexPathHandler = { [unowned self] (indexPath: Int) -> () in
-            self.didSelectItemAtIndexHandler!(indexPath: indexPath)
-            self.setMenuTitle("\(items[indexPath])")
-            self.hideMenu()
-            self.isShown = false
-            self.layoutSubviews()
+        self.tableView.selectRowAtIndexPathHandler = {
+            [weak self] (indexPath: Int) -> () in
+            self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
+            self?.setMenuTitle("\(items[indexPath])")
+            self?.hideMenu()
+            self?.isShown = false
+            self?.layoutSubviews()
         }
         
         // Add background view & table view to container view
@@ -266,13 +268,10 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     override public func layoutSubviews() {
-        if let sv = self.superview { // constrain to superview if exists
-            let margin = CGFloat(50.0) // leaving out space for 1 button on each side
-            self.menuTitle.frame = CGRect(x: margin, y: 0, width: sv.frame.size.width-margin*2, height: self.frame.size.height)
-        }
+        self.menuTitle.frame = self.frame
         self.menuTitle.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2 - 2)
         self.menuArrow.sizeToFit()
-        self.menuArrow.center = CGPointMake(self.menuTitle.center.x, self.menuTitle.center.y + 14)
+        self.menuArrow.center = CGPointMake(self.menuTitle.center.x, self.menuTitle.center.y + (self.configuration.arrowPadding + self.configuration.arrowImage.size.height/2))
     }
     
     func setupDefaultConfiguration() {
@@ -282,7 +281,7 @@ public class BTNavigationDropdownMenu: UIView {
         self.cellTextLabelColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
     }
     
-    func showMenu() {
+    public func showMenu() {
         self.menuWrapper.frame.origin.y = self.navigationController!.navigationBar.frame.maxY
         
         // Table view header
@@ -320,7 +319,7 @@ public class BTNavigationDropdownMenu: UIView {
         )
     }
     
-    func hideMenu() {
+    public func hideMenu() {
         // Rotate arrow
         self.rotateArrow()
         
@@ -356,9 +355,6 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     public func setMenuTitle(title: String) {
-        if title == self.menuTitle.text {
-            return
-        }
         self.tableView.selectedIndexPath = -1 // in case nothing matches
         for (index, item) in items.enumerate() {
             if item as? String == title {
@@ -394,6 +390,8 @@ class BTConfiguration {
     var animationDuration: NSTimeInterval!
     var maskBackgroundColor: UIColor!
     var maskBackgroundOpacity: CGFloat!
+    var titleMargin: CGFloat!
+    
     
     init() {
         self.defaultValue()
@@ -418,9 +416,10 @@ class BTConfiguration {
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
         self.animationDuration = 0.5
         self.arrowImage = UIImage(contentsOfFile: arrowImagePath!)
-        self.arrowPadding = 15
+        self.arrowPadding = 10
         self.maskBackgroundColor = UIColor.blackColor()
         self.maskBackgroundOpacity = 0.3
+        self.titleMargin = 44
     }
 }
 
