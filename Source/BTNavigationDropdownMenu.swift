@@ -274,6 +274,33 @@ public class BTNavigationDropdownMenu: UIView {
         self.menuArrow.center = CGPointMake(self.menuTitle.center.x, self.menuTitle.center.y + (self.configuration.arrowPadding + self.configuration.arrowImage.size.height/2))
     }
     
+    public func setMenuTitle(title: String) {
+        self.tableView.selectedIndexPath = -1 // in case nothing matches
+        for (index, item) in items.enumerate() {
+            if item as? String == title {
+                self.tableView.selectedIndexPath = index
+                break
+            }
+        }
+        self.menuTitle.text = title
+    }
+    
+    public func showMenuEx() {
+        if isShown == false {
+            self.showMenu()
+            self.isShown = true
+            self.layoutSubviews()
+        }
+    }
+    
+    public func hideMenuEx() {
+        if isShown == true {
+            self.hideMenu()
+            self.isShown = false
+            self.layoutSubviews()
+        }
+    }
+    
     func setupDefaultConfiguration() {
         self.menuTitleColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor // Setter
         self.cellBackgroundColor = self.navigationController?.navigationBar.barTintColor
@@ -281,7 +308,7 @@ public class BTNavigationDropdownMenu: UIView {
         self.cellTextLabelColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
     }
     
-    public func showMenu() {
+    func showMenu() {
         self.menuWrapper.frame.origin.y = self.navigationController!.navigationBar.frame.maxY
         
         // Table view header
@@ -319,7 +346,7 @@ public class BTNavigationDropdownMenu: UIView {
         )
     }
     
-    public func hideMenu() {
+    func hideMenu() {
         // Rotate arrow
         self.rotateArrow()
         
@@ -352,17 +379,6 @@ public class BTNavigationDropdownMenu: UIView {
                 selfie.menuArrow.transform = CGAffineTransformRotate(selfie.menuArrow.transform, 180 * CGFloat(M_PI/180))
             }
             })
-    }
-    
-    public func setMenuTitle(title: String) {
-        self.tableView.selectedIndexPath = -1 // in case nothing matches
-        for (index, item) in items.enumerate() {
-            if item as? String == title {
-                self.tableView.selectedIndexPath = index
-                break
-            }
-        }
-        self.menuTitle.text = title
     }
     
     func menuButtonTapped(sender: UIButton) {
