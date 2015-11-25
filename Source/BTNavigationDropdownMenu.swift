@@ -233,11 +233,11 @@ public class BTNavigationDropdownMenu: UIView {
         
         self.tableView.selectRowAtIndexPathHandler = {
             [weak self] (indexPath: Int) -> () in
-            self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
             self?.setMenuTitle("\(items[indexPath])")
             self?.hideMenu()
             self?.isShown = false
             self?.layoutSubviews()
+            self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
         }
         
         // Add background view & table view to container view
@@ -493,7 +493,6 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
     
     // Table view delegate
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        selectedIndexPath = indexPath.row
         self.selectRowAtIndexPathHandler!(indexPath: indexPath.row)
         self.reloadData()
         let cell = tableView.cellForRowAtIndexPath(indexPath) as? BTTableViewCell
