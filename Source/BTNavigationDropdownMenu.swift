@@ -171,7 +171,7 @@ public class BTNavigationDropdownMenu: UIView {
     private var backgroundView: UIView!
     private var tableView: BTTableView!
     private var items: [AnyObject]!
-    private var isShown: Bool!
+    private(set) public var isShown: Bool!
     private var menuWrapper: UIView!
     
     required public init?(coder aDecoder: NSCoder) {
