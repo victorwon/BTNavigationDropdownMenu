@@ -241,6 +241,11 @@ public class BTNavigationDropdownMenu: UIView {
             self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
         }
         
+        // click outside to hide menu
+        let tapGesture = UITapGestureRecognizer(target: self, action: Selector("hideMenuEx"))
+        self.tableView.backgroundView = UIView(frame: self.tableView.frame)
+        self.tableView.backgroundView!.addGestureRecognizer(tapGesture)
+        
         // Add background view & table view to container view
         self.menuWrapper.addSubview(self.backgroundView)
         self.menuWrapper.addSubview(self.tableView)
