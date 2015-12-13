@@ -182,10 +182,10 @@ public class BTNavigationDropdownMenu: UIView {
         self.navigationController?.view.removeObserver(self, forKeyPath: "frame")
     }
     
-    public init(title: String, items: [AnyObject]) {
+    public init(title: String, items: [AnyObject], navigationController: UINavigationController!) {
         
         // Navigation controller
-        self.navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController?.topMostViewController?.navigationController
+        self.navigationController = navigationController
         
         // Set frame
         let frame = CGRectMake(0, 0, self.navigationController!.navigationBar.frame.width, self.navigationController!.navigationBar.frame.height)
