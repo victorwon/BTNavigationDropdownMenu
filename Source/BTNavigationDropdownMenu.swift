@@ -178,8 +178,14 @@ public class BTNavigationDropdownMenu: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    deinit {
-        self.navigationController?.view.removeObserver(self, forKeyPath: "frame")
+    public func registerObserver() {
+        self.navigationController?.view.addObserver(self, forKeyPath: "frame", options: .New, context: nil)
+        
+    }
+    
+    public func unregisterObserver() {
+        self.navigationController?.view.removeObserver(self, forKeyPath: "frame", context: nil)
+        
     }
     
     public init(title: String, items: [AnyObject], navigationController: UINavigationController!) {
@@ -189,10 +195,8 @@ public class BTNavigationDropdownMenu: UIView {
         
         // Set frame
         let frame = CGRectMake(0, 0, self.navigationController!.navigationBar.frame.width, self.navigationController!.navigationBar.frame.height)
-        
         super.init(frame:frame)
         
-        self.navigationController?.view.addObserver(self, forKeyPath: "frame", options: .New, context: nil)
         
         self.isShown = false
         self.items = items
