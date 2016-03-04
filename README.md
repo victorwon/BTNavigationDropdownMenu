@@ -32,7 +32,7 @@ let items = ["Most Popular", "Latest", "Trending", "Nearest", "Top Picks"]
 ```
 Create a **new instance** of BTNavigationDropdownMenu:
 ```swift
-let menuView = BTNavigationDropdownMenu(title: items.first!, items: items)
+let menuView = BTNavigationDropdownMenu(navigationController: self.navigationController, title: items.first!, items: items)
 ```
 Set **title of navigation bar** as menuView:
 ```swift
@@ -45,6 +45,9 @@ menuView.didSelectItemAtIndexHandler = {(indexPath: Int) -> () in
             self.selectedCellLabel.text = items[indexPath]
 }
 ```
+Use `menuView.show()` or `menuView.hide()` if you want to show or hide dropdown menu manually.
+
+Use `menuView.isShown` (Boolean type) property to check showing state of dropdown menu.
 
 ### Customization
 Once you have assigned the items and frame for dropdown menu, you can custom the look and the feel of menu. You can override these properties for your favor:
@@ -58,6 +61,8 @@ Once you have assigned the items and frame for dropdown menu, you can custom the
 `cellTextLabelColor` **- The color of the text inside cell.** *Default is darkGrayColor()*
 
 `cellTextLabelFont` **- The font of the text inside cell.** *Default is HelveticaNeue-Bold, size 19*
+
+`cellTextLabelAlignment` **- The alignment of the text inside cell.** *Default is .Left*
 
 `cellSelectionColor`  **- The color of the cell when the cell is selected.** *Default is lightGrayColor()*
 
@@ -77,28 +82,7 @@ Once you have assigned the items and frame for dropdown menu, you can custom the
 
 ## Requirement
 - iOS 8.0+ (Cocoapods with Swift support will only work on iOS 8.0+. Alternatively, you will have to import library manually to your project)
-- Xcode 7.0, Swift 2.0
-
-## Changelog
-**0.1.7 (04-09-2015)**
-- Use optional for some properties that relating to navigation controller
-
-**0.1.6 (28-08-2015)**
-- No need to use containerView param when initializing menuView now
-
-**0.1.5 (27-08-2015)**
-- Support device orientation
-- Support Split View on iPad
-
-**0.1.4 (26-08-2015)**
-- Fixed issue [#5] (https://github.com/PhamBaTho/BTNavigationDropdownMenu/issues/5). The dropdown overlay appears overtop the tab bar now
-- Refactoring and clean up
-
-**0.1.3 (25-07-2015)**
-- Use `usingSpringWithDamping` instead of `contentOffset` for show/hide animation
-
-**0.1.2 (21-07-2015)**
-- Allow change of arrow image after creation of menu
+- Xcode 7.0+, Swift 2.0+
 
 ## License
 BTNavigationDropdownMenu is available under the MIT License. See the [LICENSE](https://github.com/PhamBaTho/BTNavigationDropdownMenu/blob/master/LICENSE) for details.

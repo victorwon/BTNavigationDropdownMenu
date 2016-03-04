@@ -89,6 +89,16 @@ public class BTNavigationDropdownMenu: UIView {
         }
     }
     
+    // The alignment of the text inside cell. Default is .Left
+    public var cellTextLabelAlignment: NSTextAlignment! {
+        get {
+            return self.configuration.cellTextLabelAlignment
+        }
+        set(value) {
+            self.configuration.cellTextLabelAlignment = value
+        }
+    }
+    
     // The color of the cell when the cell is selected. Default is lightGrayColor()
     public var cellSelectionColor: UIColor! {
         get {
@@ -161,8 +171,9 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     public var didSelectItemAtIndexHandler: ((indexPath: Int) -> ())?
-    
-    private weak var navigationController: UINavigationController?
+    public var isShown: Bool!
+
+    private var navigationController: UINavigationController?
     private var configuration = BTConfiguration()
     private var topSeparator: UIView!
     private var menuButton: UIButton!
@@ -171,7 +182,7 @@ public class BTNavigationDropdownMenu: UIView {
     private var backgroundView: UIView!
     private var tableView: BTTableView!
     private var items: [AnyObject]!
-    private(set) public var isShown: Bool!
+
     private var menuWrapper: UIView!
     
     required public init?(coder aDecoder: NSCoder) {
@@ -185,13 +196,21 @@ public class BTNavigationDropdownMenu: UIView {
     
     public func unregisterObserver() {
         self.navigationController?.view.removeObserver(self, forKeyPath: "frame", context: nil)
-        
     }
     
-    public init(title: String, items: [AnyObject], navigationController: UINavigationController!) {
+    @available(*, deprecated, message="Use init(navigationController:title:items:) instead", renamed="BTNavigationDropdownMenu(navigationController: UINavigationController?, title: String, items: [AnyObject])")
+    public convenience init(title: String, items: [AnyObject]) {
+        self.init(navigationController: nil, title: title, items: items)
+    }
+    
+    public init(navigationController: UINavigationController?, title: String, items: [AnyObject]) {
         
         // Navigation controller
-        self.navigationController = navigationController
+        if let navigationController = navigationController {
+            self.navigationController = navigationController
+        } else {
+            self.navigationController = UIApplication.sharedApplication().keyWindow?.rootViewController?.topMostViewController?.navigationController
+        }
         
         // Set frame
         let frame = CGRectMake(0, 0, self.navigationController!.navigationBar.frame.width, self.navigationController!.navigationBar.frame.height)
@@ -232,23 +251,19 @@ public class BTNavigationDropdownMenu: UIView {
         self.backgroundView.backgroundColor = self.configuration.maskBackgroundColor
         self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
         
+        let backgroundTapRecognizer = UITapGestureRecognizer(target: self, action: "hideMenu");
+        self.backgroundView.addGestureRecognizer(backgroundTapRecognizer)
+        
         // Init table view
         let layoutOffset = (self.navigationController?.topViewController?.topLayoutGuide.length)! + (self.navigationController?.topViewController?.bottomLayoutGuide.length)!
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300 - layoutOffset), items: items, configuration: self.configuration)
         
-        self.tableView.selectRowAtIndexPathHandler = {
-            [weak self] (indexPath: Int) -> () in
-            self?.setMenuTitle("\(items[indexPath])")
-            self?.hideMenu()
-            self?.isShown = false
-            self?.layoutSubviews()
-            self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
+        self.tableView.selectRowAtIndexPathHandler = { (indexPath: Int) -> () in
+            self.setMenuTitle("\(items[indexPath])")
+            self.hideMenu()
+            self.layoutSubviews()
+            self.didSelectItemAtIndexHandler!(indexPath: indexPath)
         }
-        
-        // click outside to hide menu
-        let tapGesture = UITapGestureRecognizer(target: self, action: Selector("hideMenuEx"))
-        self.tableView.backgroundView = UIView(frame: self.tableView.frame)
-        self.tableView.backgroundView!.addGestureRecognizer(tapGesture)
         
         // Add background view & table view to container view
         self.menuWrapper.addSubview(self.backgroundView)
@@ -283,31 +298,16 @@ public class BTNavigationDropdownMenu: UIView {
         self.menuArrow.sizeToFit()
         self.menuArrow.center = CGPointMake(self.menuTitle.center.x, self.menuTitle.center.y + (self.configuration.arrowPadding + self.configuration.arrowImage.size.height/2))
     }
-    
-    public func setMenuTitle(title: String) {
-        self.tableView.selectedIndexPath = -1 // in case nothing matches
-        for (index, item) in items.enumerate() {
-            if item as? String == title {
-                self.tableView.selectedIndexPath = index
-                break
-            }
-        }
-        self.menuTitle.text = title
-    }
-    
-    public func showMenuEx() {
-        if isShown == false {
+        
+    public func show() {
+        if self.isShown == false {
             self.showMenu()
-            self.isShown = true
-            self.layoutSubviews()
         }
     }
     
-    public func hideMenuEx() {
-        if isShown == true {
+    public func hide() {
+        if self.isShown == true {
             self.hideMenu()
-            self.isShown = false
-            self.layoutSubviews()
         }
     }
     
@@ -320,6 +320,8 @@ public class BTNavigationDropdownMenu: UIView {
     
     func showMenu() {
         self.menuWrapper.frame.origin.y = self.navigationController!.navigationBar.frame.maxY
+        
+        self.isShown = true
         
         // Table view header
         let headerView = UIView(frame: CGRectMake(0, 0, self.frame.width, 300))
@@ -343,6 +345,8 @@ public class BTNavigationDropdownMenu: UIView {
         // Reload data to dismiss highlight color of selected cell
         self.tableView.reloadData()
         
+        self.menuWrapper.superview?.bringSubviewToFront(self.menuWrapper)
+        
         UIView.animateWithDuration(
             self.configuration.animationDuration * 1.5,
             delay: 0,
@@ -359,6 +363,8 @@ public class BTNavigationDropdownMenu: UIView {
     func hideMenu() {
         // Rotate arrow
         self.rotateArrow()
+        
+        self.isShown = false
         
         // Change background alpha
         self.backgroundView.alpha = self.configuration.maskBackgroundOpacity
@@ -391,13 +397,19 @@ public class BTNavigationDropdownMenu: UIView {
             })
     }
     
-    func menuButtonTapped(sender: UIButton) {
-        self.isShown = !self.isShown
-        if self.isShown == true {
-            self.showMenu()
-        } else {
-            self.hideMenu()
+    public func setMenuTitle(title: String) {
+        self.tableView.selectedIndexPath = -1 // in case nothing matches
+        for (index, item) in items.enumerate() {
+            if item as? String == title {
+                self.tableView.selectedIndexPath = index
+                break
+            }
         }
+        self.menuTitle.text = title
+    }
+    
+    func menuButtonTapped(sender: UIButton) {
+        self.isShown == true ? hideMenu() : showMenu()
     }
 }
 
@@ -409,6 +421,7 @@ class BTConfiguration {
     var cellSeparatorColor: UIColor?
     var cellTextLabelColor: UIColor?
     var cellTextLabelFont: UIFont!
+    var cellTextLabelAlignment: NSTextAlignment!
     var cellSelectionColor: UIColor?
     var checkMarkImage: UIImage!
     var arrowImage: UIImage!
@@ -438,6 +451,7 @@ class BTConfiguration {
         self.cellSeparatorColor = UIColor.darkGrayColor()
         self.cellTextLabelColor = UIColor.darkGrayColor()
         self.cellTextLabelFont = UIFont(name: "HelveticaNeue-Bold", size: 17)
+        self.cellTextLabelAlignment = NSTextAlignment.Left
         self.cellSelectionColor = UIColor.lightGrayColor()
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
         self.animationDuration = 0.5
@@ -480,6 +494,13 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         self.tableFooterView = UIView(frame: CGRectZero)
     }
     
+    override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
+        if let hitView = super.hitTest(point, withEvent: event) where hitView.isKindOfClass(BTTableCellContentView.self) {
+            return hitView
+        }
+        return nil;
+    }
+    
     // Table view data source
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
@@ -518,6 +539,8 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
 
 // MARK: Table view cell
 class BTTableViewCell: UITableViewCell {
+    let checkmarkIconWidth: CGFloat = 20
+    let horizontalMargin: CGFloat = 10
     
     var checkmarkIcon: UIImageView!
     var cellContentFrame: CGRect!
@@ -532,14 +555,25 @@ class BTTableViewCell: UITableViewCell {
         cellContentFrame = CGRectMake(0, 0, (UIApplication.sharedApplication().keyWindow?.frame.width)!, self.configuration.cellHeight)
         self.contentView.backgroundColor = self.configuration.cellBackgroundColor
         self.selectionStyle = UITableViewCellSelectionStyle.None
-        self.textLabel!.textAlignment = NSTextAlignment.Left
         self.textLabel!.textColor = self.configuration.cellTextLabelColor
         self.textLabel!.font = self.configuration.cellTextLabelFont
-        self.textLabel!.frame = CGRectMake(20, 0, cellContentFrame.width-80, cellContentFrame.height)
-        
+        self.textLabel!.textAlignment = self.configuration.cellTextLabelAlignment
+        if self.textLabel!.textAlignment == .Center {
+   	    self.textLabel!.frame = CGRectMake(horizontalMargin, 0, -horizontalMargin*3-checkmarkIconWidth, cellContentFrame.height)
+        } else if self.textLabel!.textAlignment == .Left {
+            self.textLabel!.frame = CGRectMake(horizontalMargin, 0, cellContentFrame.width-horizontalMargin*3-checkmarkIconWidth, cellContentFrame.height)
+        } else {
+            self.textLabel!.frame = CGRectMake(-horizontalMargin, 0, cellContentFrame.width-horizontalMargin*3-checkmarkIconWidth, cellContentFrame.height)
+        }
         
         // Checkmark icon
-        self.checkmarkIcon = UIImageView(frame: CGRectMake(cellContentFrame.width - 50, (cellContentFrame.height - 20)/2, 20, 20))
+        if self.textLabel!.textAlignment == .Center {
+            self.checkmarkIcon = UIImageView(frame: CGRectMake(cellContentFrame.width - checkmarkIconWidth - horizontalMargin, (cellContentFrame.height - checkmarkIconWidth)/2, checkmarkIconWidth, checkmarkIconWidth))
+        } else if self.textLabel!.textAlignment == .Left {
+            self.checkmarkIcon = UIImageView(frame: CGRectMake(cellContentFrame.width - checkmarkIconWidth - horizontalMargin, (cellContentFrame.height - checkmarkIconWidth)/2, checkmarkIconWidth, checkmarkIconWidth))
+        } else {
+            self.checkmarkIcon = UIImageView(frame: CGRectMake(horizontalMargin, (cellContentFrame.height - checkmarkIconWidth)/2, checkmarkIconWidth, checkmarkIconWidth))
+        }
         self.checkmarkIcon.hidden = true
         self.checkmarkIcon.image = self.configuration.checkMarkImage
         self.checkmarkIcon.contentMode = UIViewContentMode.ScaleAspectFill
