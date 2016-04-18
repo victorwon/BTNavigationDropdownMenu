@@ -30,7 +30,7 @@ class ViewController: UIViewController {
         menuView.cellTextLabelFont = UIFont(name: "Avenir-Heavy", size: 17)
         menuView.cellTextLabelAlignment = .Left // .Center // .Right // .Left
         menuView.arrowPadding = 15
-        menuView.animationDuration = 0.5
+        menuView.animationDuration = 0.3
         menuView.maskBackgroundColor = UIColor.blackColor()
         menuView.maskBackgroundOpacity = 0.3
         menuView.didSelectItemAtIndexHandler = {(indexPath: Int) -> () in

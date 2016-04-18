@@ -349,10 +349,8 @@ public class BTNavigationDropdownMenu: UIView {
         self.menuWrapper.superview?.bringSubviewToFront(self.menuWrapper)
         
         UIView.animateWithDuration(
-            self.configuration.animationDuration * 1.5,
+            self.configuration.animationDuration,
             delay: 0,
-            usingSpringWithDamping: 0.7,
-            initialSpringVelocity: 0.5,
             options: [],
             animations: {
                 self.tableView.frame.origin.y = CGFloat(-300)
@@ -371,10 +369,8 @@ public class BTNavigationDropdownMenu: UIView {
         self.backgroundView.alpha = self.configuration.maskBackgroundOpacity
         
         UIView.animateWithDuration(
-            self.configuration.animationDuration * 1.5,
+            self.configuration.animationDuration,
             delay: 0,
-            usingSpringWithDamping: 0.7,
-            initialSpringVelocity: 0.5,
             options: [],
             animations: {
                 self.tableView.frame.origin.y = CGFloat(-200)
@@ -454,7 +450,7 @@ class BTConfiguration {
         self.cellSelectionColor = UIColor.lightGrayColor()
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
         self.keepSelectedCellColor = false
-        self.animationDuration = 0.5
+        self.animationDuration = 0.3
         self.arrowImage = UIImage(contentsOfFile: arrowImagePath!)
         self.arrowPadding = 15
         self.maskBackgroundColor = UIColor.blackColor()
