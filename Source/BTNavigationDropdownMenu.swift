@@ -363,6 +363,8 @@ public class BTNavigationDropdownMenu: UIView {
         UIView.animateWithDuration(
             self.configuration.animationDuration,
             delay: 0,
+            usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 0.5,
             options: [],
             animations: {
                 self.tableView.frame.origin.y = CGFloat(-300)
