@@ -263,11 +263,11 @@ public class BTNavigationDropdownMenu: UIView {
         self.backgroundView.addGestureRecognizer(backgroundTapRecognizer)
         
         // Init table view
-        let layoutOffset = 0
+        var layoutOffset:CGFloat = 0.0
         if let tvc = self.navigationController?.topViewController { // calc offset in case menu items longer than screen height
             layoutOffset = tvc.topLayoutGuide.length + tvc.bottomLayoutGuide.length
         }
-        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300 - layoutOffset), items: items, configuration: self.configuration)
+        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300 - layoutOffset), items: items, title: title, configuration: self.configuration)
         
         self.tableView.selectRowAtIndexPathHandler = { [weak self] (indexPath: Int) -> () in
             self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
@@ -296,7 +296,7 @@ public class BTNavigationDropdownMenu: UIView {
     }
     
     override public func layoutSubviews() {
-        self.menuTitle.sizeToFit()
+        self.menuTitle.frame = self.frame   // ensure menu width not overflow
         self.menuTitle.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2 - 2)
         self.menuArrow.sizeToFit()
         self.menuArrow.center = CGPointMake(self.menuTitle.center.x, self.menuTitle.center.y + (self.configuration.arrowPadding + self.configuration.arrowImage.size.height/2))
