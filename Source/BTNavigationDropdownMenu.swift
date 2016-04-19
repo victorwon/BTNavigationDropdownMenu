@@ -119,6 +119,15 @@ public class BTNavigationDropdownMenu: UIView {
         }
     }
     
+    public var keepSelectedCellColor: Bool! {
+        get {
+            return self.configuration.keepSelectedCellColor
+        }
+        set(value) {
+            self.configuration.keepSelectedCellColor = value
+        }
+    }
+    
     // The animation duration of showing/hiding menu. Default is 0.3
     public var animationDuration: NSTimeInterval! {
         get {
@@ -173,7 +182,7 @@ public class BTNavigationDropdownMenu: UIView {
     public var didSelectItemAtIndexHandler: ((indexPath: Int) -> ())?
     public var isShown: Bool!
 
-    private var navigationController: UINavigationController?
+    private weak var navigationController: UINavigationController?
     private var configuration = BTConfiguration()
     private var topSeparator: UIView!
     private var menuButton: UIButton!
@@ -203,7 +212,7 @@ public class BTNavigationDropdownMenu: UIView {
         self.init(navigationController: nil, title: title, items: items)
     }
     
-    public init(navigationController: UINavigationController?, title: String, items: [AnyObject]) {
+    public init(navigationController: UINavigationController? = nil, title: String, items: [AnyObject]) {
         
         // Navigation controller
         if let navigationController = navigationController {
@@ -216,7 +225,6 @@ public class BTNavigationDropdownMenu: UIView {
         let frame = CGRectMake(0, 0, self.navigationController!.navigationBar.frame.width, self.navigationController!.navigationBar.frame.height)
         super.init(frame:frame)
         
-        
         self.isShown = false
         self.items = items
         
@@ -225,16 +233,16 @@ public class BTNavigationDropdownMenu: UIView {
         
         // Init button as navigation title
         self.menuButton = UIButton(frame: frame)
-        self.menuButton.addTarget(self, action: "menuButtonTapped:", forControlEvents: UIControlEvents.TouchUpInside)
+        self.menuButton.addTarget(self, action: #selector(BTNavigationDropdownMenu.menuButtonTapped(_:)), forControlEvents: UIControlEvents.TouchUpInside)
         self.addSubview(self.menuButton)
-        
+
         self.menuTitle = UILabel(frame: frame)
         self.menuTitle.text = title
         self.menuTitle.textColor = self.menuTitleColor
         self.menuTitle.textAlignment = NSTextAlignment.Center
         self.menuTitle.font = self.configuration.cellTextLabelFont
         self.menuButton.addSubview(self.menuTitle)
-        
+
         self.menuArrow = UIImageView(image: self.configuration.arrowImage)
         self.menuButton.addSubview(self.menuArrow)
         
@@ -244,25 +252,28 @@ public class BTNavigationDropdownMenu: UIView {
         // Set up DropdownMenu
         self.menuWrapper = UIView(frame: CGRectMake(menuWrapperBounds.origin.x, 0, menuWrapperBounds.width, menuWrapperBounds.height))
         self.menuWrapper.clipsToBounds = true
-        self.menuWrapper.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
+        self.menuWrapper.autoresizingMask = [ .FlexibleWidth, .FlexibleHeight ]
         
         // Init background view (under table view)
         self.backgroundView = UIView(frame: menuWrapperBounds)
         self.backgroundView.backgroundColor = self.configuration.maskBackgroundColor
-        self.backgroundView.autoresizingMask = UIViewAutoresizing.FlexibleWidth.union(UIViewAutoresizing.FlexibleHeight)
+        self.backgroundView.autoresizingMask = [ .FlexibleWidth, .FlexibleHeight ]
         
-        let backgroundTapRecognizer = UITapGestureRecognizer(target: self, action: "hideMenu");
+        let backgroundTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(BTNavigationDropdownMenu.hideMenu));
         self.backgroundView.addGestureRecognizer(backgroundTapRecognizer)
         
         // Init table view
-        let layoutOffset = (self.navigationController?.topViewController?.topLayoutGuide.length)! + (self.navigationController?.topViewController?.bottomLayoutGuide.length)!
+        let layoutOffset = 0
+        if let tvc = self.navigationController?.topViewController { // calc offset in case menu items longer than screen height
+            layoutOffset = tvc.topLayoutGuide.length + tvc.bottomLayoutGuide.length
+        }
         self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 300 - layoutOffset), items: items, configuration: self.configuration)
         
-        self.tableView.selectRowAtIndexPathHandler = { (indexPath: Int) -> () in
-            self.setMenuTitle("\(items[indexPath])")
-            self.hideMenu()
-            self.layoutSubviews()
-            self.didSelectItemAtIndexHandler!(indexPath: indexPath)
+        self.tableView.selectRowAtIndexPathHandler = { [weak self] (indexPath: Int) -> () in
+            self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
+            self?.setMenuTitle("\(items[indexPath])")
+            self?.hideMenu()
+            self?.layoutSubviews()
         }
         
         // Add background view & table view to container view
@@ -284,21 +295,15 @@ public class BTNavigationDropdownMenu: UIView {
         self.setMenuTitle(title)
     }
     
-    public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        if keyPath == "frame" {
-            // Set up DropdownMenu
-            self.menuWrapper.frame.origin.y = self.navigationController!.navigationBar.frame.maxY
-            self.tableView.reloadData()
-        }
-    }
-    
     override public func layoutSubviews() {
-        self.menuTitle.frame = self.frame
+        self.menuTitle.sizeToFit()
         self.menuTitle.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2 - 2)
         self.menuArrow.sizeToFit()
         self.menuArrow.center = CGPointMake(self.menuTitle.center.x, self.menuTitle.center.y + (self.configuration.arrowPadding + self.configuration.arrowImage.size.height/2))
+        self.menuWrapper.frame.origin.y = self.navigationController!.navigationBar.frame.maxY
+        self.tableView.reloadData()
     }
-        
+    
     public func show() {
         if self.isShown == false {
             self.showMenu()
@@ -308,6 +313,14 @@ public class BTNavigationDropdownMenu: UIView {
     public func hide() {
         if self.isShown == true {
             self.hideMenu()
+        }
+    }
+
+    public func toggle() {
+        if(self.isShown == true) {
+            self.hideMenu();
+        } else {
+            self.showMenu();
         }
     }
     
@@ -381,11 +394,17 @@ public class BTNavigationDropdownMenu: UIView {
         )
         
         // Animation
-        UIView.animateWithDuration(self.configuration.animationDuration, delay: 0, options: UIViewAnimationOptions.TransitionNone, animations: {
-            self.tableView.frame.origin.y = -CGFloat(self.items.count) * self.configuration.cellHeight - 300
-            self.backgroundView.alpha = 0
+        UIView.animateWithDuration(
+            self.configuration.animationDuration,
+            delay: 0,
+            options: UIViewAnimationOptions.TransitionNone,
+            animations: {
+                self.tableView.frame.origin.y = -CGFloat(self.items.count) * self.configuration.cellHeight - 300
+                self.backgroundView.alpha = 0
             }, completion: { _ in
-                self.menuWrapper.hidden = true
+                if self.isShown == false && self.tableView.frame.origin.y == -CGFloat(self.items.count) * self.configuration.cellHeight - 300 {
+                    self.menuWrapper.hidden = true
+                }
         })
     }
     
@@ -424,6 +443,7 @@ class BTConfiguration {
     var cellTextLabelAlignment: NSTextAlignment!
     var cellSelectionColor: UIColor?
     var checkMarkImage: UIImage!
+    var keepSelectedCellColor: Bool!
     var arrowImage: UIImage!
     var arrowPadding: CGFloat!
     var animationDuration: NSTimeInterval!
@@ -454,6 +474,7 @@ class BTConfiguration {
         self.cellTextLabelAlignment = NSTextAlignment.Left
         self.cellSelectionColor = UIColor.lightGrayColor()
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
+        self.keepSelectedCellColor = false
         self.animationDuration = 0.5
         self.arrowImage = UIImage(contentsOfFile: arrowImagePath!)
         self.arrowPadding = 10
@@ -478,11 +499,11 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(frame: CGRect, items: [AnyObject], configuration: BTConfiguration) {
+    init(frame: CGRect, items: [AnyObject], title: String, configuration: BTConfiguration) {
         super.init(frame: frame, style: UITableViewStyle.Plain)
         
         self.items = items
-        self.selectedIndexPath = -1
+        self.selectedIndexPath = (items as! [String]).indexOf(title)
         self.configuration = configuration
         
         // Setup table view
@@ -490,6 +511,7 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         self.dataSource = self
         self.backgroundColor = UIColor.clearColor()
         self.separatorStyle = UITableViewCellSeparatorStyle.None
+        //        self.separatorEffect = UIBlurEffect(style: .Light)
         self.autoresizingMask = UIViewAutoresizing.FlexibleWidth
         self.tableFooterView = UIView(frame: CGRectZero)
     }
@@ -518,6 +540,9 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         let cell = BTTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "Cell", configuration: self.configuration)
         cell.textLabel?.text = self.items[indexPath.row] as? String
         cell.checkmarkIcon.hidden = (indexPath.row == selectedIndexPath) ? false : true
+        if self.configuration.keepSelectedCellColor == true {
+            cell.contentView.backgroundColor = (indexPath.row == selectedIndexPath) ? self.configuration.cellSelectionColor : self.configuration.cellBackgroundColor
+        }
         
         return cell
     }
