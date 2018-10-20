@@ -40,12 +40,12 @@ open class BTNavigationDropdownMenu: UIView {
     }
 
     // The height of the cell. Default is 50
-    open var cellHeight: NSNumber! {
+    open var cellHeight: NSNumber {
         get {
-            return self.configuration.cellHeight as NSNumber!
+            return self.configuration.cellHeight as NSNumber
         }
         set(value) {
-            self.configuration.cellHeight = CGFloat(value)
+            self.configuration.cellHeight = CGFloat(truncating: value)
         }
     }
 
@@ -293,7 +293,8 @@ open class BTNavigationDropdownMenu: UIView {
         case .title(let title):
             titleToDisplay = title
         }
-
+        
+        // by vic: make title click area matching the largest title in list
         if let maxTitle = items.max(by: {$1.characters.count > $0.characters.count}) {
             titleSize = (maxTitle as NSString).size(attributes: [NSFontAttributeName:self.configuration.navigationBarTitleFont])
         }
@@ -308,7 +309,7 @@ open class BTNavigationDropdownMenu: UIView {
 
         // Init button as navigation title
         self.menuButton = UIButton(frame: frame)
-        self.menuButton.addTarget(self, action: #selector(BTNavigationDropdownMenu.menuButtonTapped(_:)), for: UIControlEvents.touchUpInside)
+        self.menuButton.addTarget(self, action: #selector(BTNavigationDropdownMenu.menuButtonTapped(_:)), for: UIControl.Event.touchUpInside)
         self.addSubview(self.menuButton)
         
         self.menuTitle = UILabel(frame: frame)
@@ -363,7 +364,7 @@ open class BTNavigationDropdownMenu: UIView {
 
         // Add Line on top
         self.topSeparator = UIView(frame: CGRect(x: 0, y: 0, width: menuWrapperBounds.size.width, height: 0.5))
-        self.topSeparator.autoresizingMask = UIViewAutoresizing.flexibleWidth
+        self.topSeparator.autoresizingMask = UIView.AutoresizingMask.flexibleWidth
         self.menuWrapper.addSubview(self.topSeparator)
 
         // Remove MenuWrapper from container view to avoid leaks
@@ -434,10 +435,10 @@ open class BTNavigationDropdownMenu: UIView {
     }
 
     func setupDefaultConfiguration() {
-        self.menuTitleColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+        self.menuTitleColor = self.navigationController?.navigationBar.titleTextAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor
         self.cellBackgroundColor = self.navigationController?.navigationBar.barTintColor
-        self.cellSeparatorColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
-        self.cellTextLabelColor = self.navigationController?.navigationBar.titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+        self.cellSeparatorColor = self.navigationController?.navigationBar.titleTextAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor
+        self.cellTextLabelColor = self.navigationController?.navigationBar.titleTextAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor
 
         self.arrowTintColor = self.configuration.arrowTintColor
     }
@@ -469,7 +470,7 @@ open class BTNavigationDropdownMenu: UIView {
         // Reload data to dismiss highlight color of selected cell
         self.tableView.reloadData()
 
-        self.menuWrapper.superview?.bringSubview(toFront: self.menuWrapper)
+        self.menuWrapper.superview?.bringSubviewToFront(self.menuWrapper)
 
         UIView.animate(
             withDuration: self.configuration.animationDuration * 1.5,
@@ -484,7 +485,7 @@ open class BTNavigationDropdownMenu: UIView {
         )
     }
 
-    func hideMenu() {
+    @objc func hideMenu() {
         // Rotate arrow
         self.rotateArrow()
 
@@ -508,7 +509,7 @@ open class BTNavigationDropdownMenu: UIView {
         UIView.animate(
             withDuration: self.configuration.animationDuration,
             delay: 0,
-            options: UIViewAnimationOptions(),
+            options: UIView.AnimationOptions(),
             animations: {
                 self.tableView.frame.origin.y = -CGFloat(self.items.count) * self.configuration.cellHeight - 300
                 self.backgroundView.alpha = 0 },
@@ -531,7 +532,7 @@ open class BTNavigationDropdownMenu: UIView {
         self.menuTitle.text = title
     }
     
-    func menuButtonTapped(_ sender: UIButton) {
+    @objc func menuButtonTapped(_ sender: UIButton) {
         self.isShown == true ? hideMenu() : showMenu()
     }
 }

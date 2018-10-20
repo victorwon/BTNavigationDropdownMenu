@@ -1,3 +1,7 @@
+### Support Xcode 10 and Swift 4.2 now.
+
+---
+
 ![alt tag](https://github.com/PhamBaTho/BTNavigationDropdownMenu/blob/master/Assets/BTNavigationDropdownLogo.png)
 
 [![Pod Version](https://img.shields.io/cocoapods/v/BTNavigationDropdownMenu.svg?style=flat)](http://cocoadocs.org/docsets/BTNavigationDropdownMenu/)
@@ -21,7 +25,6 @@ Go ahead and **import** BTNavigationDropdownMenu into your own Swift files
 ```swift
 import BTNavigationDropdownMenu
 ```
-Note: This library supports for **Xcode 8.3 Swift 3.1** and embedded frameworks.
 
 ## Usage:
 ### Instantiate
