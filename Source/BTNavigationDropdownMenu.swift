@@ -293,10 +293,9 @@ open class BTNavigationDropdownMenu: UIView {
         case .title(let title):
             titleToDisplay = title
         }
-        
-        // by vic: make title click area matching the largest title in list
-        if let maxTitle = items.max(by: {$1.characters.count > $0.characters.count}) {
-            titleSize = (maxTitle as NSString).size(attributes: [NSFontAttributeName:self.configuration.navigationBarTitleFont])
+
+        if let maxTitle = items.max(by: {$1.count > $0.count}) {
+            titleSize = (maxTitle as NSString).size(withAttributes: [NSAttributedString.Key.font:self.configuration.navigationBarTitleFont])
         }
 
         // Set frame
