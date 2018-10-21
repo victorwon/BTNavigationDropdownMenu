@@ -67,7 +67,7 @@ final class BTConfiguration {
         self.selectedCellTextLabelColor = UIColor.darkGray
         self.cellTextLabelFont = UIFont(name: "HelveticaNeue-Bold", size: 17)
         self.navigationBarTitleFont = UIFont(name: "HelveticaNeue-Bold", size: 17)
-        self.cellTextLabelAlignment = NSTextAlignment.center
+        self.cellTextLabelAlignment = NSTextAlignment.left
         self.cellSelectionColor = UIColor.lightGray
         self.checkMarkImage = UIImage(contentsOfFile: checkMarkImagePath!)
         self.shouldKeepSelectedCellColor = false

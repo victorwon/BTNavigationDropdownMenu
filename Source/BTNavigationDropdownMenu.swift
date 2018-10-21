@@ -378,10 +378,10 @@ open class BTNavigationDropdownMenu: UIView {
     }
 
     override open func layoutSubviews() {
-        let titleSize = menuTitle.text?.size(withAttributes: [NSAttributedString.Key.font:self.configuration.navigationBarTitleFont])
-        if titleSize?.width ?? 0 < self.menuButton.frame.width {
-            // by Vic: do not resize menu label if it's gonna overflow
+        if let titleSize = menuTitle.text?.size(withAttributes: [NSAttributedString.Key.font:self.configuration.navigationBarTitleFont]), titleSize.width < self.menuButton.frame.width {
             self.menuTitle.sizeToFit()
+        } else {
+            self.menuTitle.frame.size.width = self.menuButton.frame.width
         }
         self.menuTitle.center = CGPoint(x: self.frame.size.width/2, y: self.frame.size.height/2)
         self.menuTitle.textColor = self.configuration.menuTitleColor
