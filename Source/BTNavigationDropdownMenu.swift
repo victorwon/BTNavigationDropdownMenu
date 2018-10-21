@@ -527,7 +527,7 @@ open class BTNavigationDropdownMenu: UIView {
         })
     }
     
-    func setMenuTitle(_ title: String) {
+    open func setMenuTitle(_ title: String) {
         self.menuTitle.text = title
     }
     
