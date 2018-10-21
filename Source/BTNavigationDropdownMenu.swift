@@ -280,7 +280,6 @@ open class BTNavigationDropdownMenu: UIView {
         }
 
         // Get titleSize
-        var titleSize = CGSize.zero
         let titleToDisplay: String
 
         switch title{
@@ -294,13 +293,11 @@ open class BTNavigationDropdownMenu: UIView {
             titleToDisplay = title
         }
 
-        if let maxTitle = items.max(by: {$1.count > $0.count}) {
-            titleSize = (maxTitle as NSString).size(withAttributes: [NSAttributedString.Key.font:self.configuration.navigationBarTitleFont])
-        }
-
-        // Set frame
-        let frame = CGRect(x: 0, y: 0, width: titleSize.width + (self.configuration.arrowPadding + self.configuration.arrowImage.size.width)*2, height: self.navigationController!.navigationBar.frame.height)
-
+        // Set frame for dropdown area
+        let frame = CGRect(x: 0, y: 0,
+                        width: self.navigationController!.navigationBar.frame.width - self.configuration.titlePadding - (self.configuration.arrowPadding + self.configuration.arrowImage.size.width)*2,
+                        height: self.navigationController!.navigationBar.frame.height)
+        
         super.init(frame:frame)
 
         self.isShown = false
@@ -316,6 +313,8 @@ open class BTNavigationDropdownMenu: UIView {
         self.menuTitle.textColor = self.menuTitleColor
         self.menuTitle.font = self.configuration.navigationBarTitleFont
         self.menuTitle.textAlignment = self.configuration.cellTextLabelAlignment
+        
+        self.menuTitle.clipsToBounds = true
         self.menuButton.addSubview(self.menuTitle)
 
         self.menuArrow = UIImageView(image: self.configuration.arrowImage.withRenderingMode(.alwaysTemplate))
@@ -379,7 +378,11 @@ open class BTNavigationDropdownMenu: UIView {
     }
 
     override open func layoutSubviews() {
-        self.menuTitle.sizeToFit()
+        let titleSize = menuTitle.text?.size(withAttributes: [NSAttributedString.Key.font:self.configuration.navigationBarTitleFont])
+        if titleSize?.width ?? 0 < self.menuButton.frame.width {
+            // by Vic: do not resize menu label if it's gonna overflow
+            self.menuTitle.sizeToFit()
+        }
         self.menuTitle.center = CGPoint(x: self.frame.size.width/2, y: self.frame.size.height/2)
         self.menuTitle.textColor = self.configuration.menuTitleColor
         self.menuArrow.sizeToFit()

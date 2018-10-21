@@ -24,8 +24,8 @@
 import UIKit
 
 class BTTableViewCell: UITableViewCell {
-    let checkmarkIconWidth: CGFloat = 50
-    let horizontalMargin: CGFloat = 20
+    open let checkmarkIconWidth: CGFloat = 50
+    open let horizontalMargin: CGFloat = 20
     
     var checkmarkIcon: UIImageView!
     var cellContentFrame: CGRect!

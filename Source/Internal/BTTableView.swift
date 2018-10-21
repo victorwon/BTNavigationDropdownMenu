@@ -78,6 +78,13 @@ class BTTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
         let cell = BTTableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "Cell", configuration: self.configuration)
         cell.textLabel?.text = self.items[(indexPath as NSIndexPath).row]
         cell.checkmarkIcon.isHidden = ((indexPath as NSIndexPath).row == selectedIndexPath) ? false : true
+        if cell.checkmarkIcon.isHidden {
+            cell.textLabel!.frame.origin.x = cell.horizontalMargin
+            cell.textLabel!.frame.size.width = UIApplication.shared.keyWindow!.frame.width - cell.horizontalMargin*2
+        } else {
+            cell.textLabel!.frame.origin.x = cell.horizontalMargin + (cell.textLabel!.textAlignment != .right ? 0 : cell.checkmarkIconWidth)
+            cell.textLabel!.frame.size.width = UIApplication.shared.keyWindow!.frame.width - cell.checkmarkIconWidth - cell.horizontalMargin*2
+        }
         return cell
     }
     
