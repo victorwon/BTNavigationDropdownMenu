@@ -24,7 +24,9 @@
 import UIKit
 
 class BTTableViewCell: UITableViewCell {
-    open let checkmarkIconWidth: CGFloat = 50
+    open var checkmarkIconWidth: CGFloat = 50
+    open var checkmarkIconHeight: CGFloat = 30
+    
     open let horizontalMargin: CGFloat = 20
     
     var checkmarkIcon: UIImageView!
@@ -52,12 +54,14 @@ class BTTableViewCell: UITableViewCell {
         }
         
         // Checkmark icon
+        checkmarkIconWidth = self.configuration.checkMarkImage.size.width
+        checkmarkIconHeight = self.configuration.checkMarkImage.size.height
         if self.textLabel!.textAlignment == .center {
-            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - checkmarkIconWidth, y: (cellContentFrame.height - 30)/2, width: 30, height: 30))
+            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - checkmarkIconWidth - horizontalMargin, y: (cellContentFrame.height - checkmarkIconHeight)/2, width: checkmarkIconWidth, height: checkmarkIconHeight))
         } else if self.textLabel!.textAlignment == .left {
-            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - checkmarkIconWidth, y: (cellContentFrame.height - 30)/2, width: 30, height: 30))
+            self.checkmarkIcon = UIImageView(frame: CGRect(x: cellContentFrame.width - checkmarkIconWidth - horizontalMargin, y: (cellContentFrame.height - checkmarkIconHeight)/2, width: checkmarkIconWidth, height: checkmarkIconHeight))
         } else {
-            self.checkmarkIcon = UIImageView(frame: CGRect(x: horizontalMargin, y: (cellContentFrame.height - 30)/2, width: 30, height: 30))
+            self.checkmarkIcon = UIImageView(frame: CGRect(x: horizontalMargin, y: (cellContentFrame.height - checkmarkIconHeight)/2, width: checkmarkIconWidth, height: checkmarkIconHeight))
         }
         self.checkmarkIcon.isHidden = true
         self.checkmarkIcon.image = self.configuration.checkMarkImage
